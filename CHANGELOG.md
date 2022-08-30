@@ -1,4 +1,8 @@
 ## Unique Visits Counter Changelog
+### 1.0.7 fork - 2022-08-30
+
+- Don't count crawler.
+
 
 ### 1.0.6 - 2021-08-25
 

@@ -26,6 +26,7 @@ services:
             - '@config'
             - '@template'
             - '@user'
+            - '@request'
             - '@dbal.conn'
             - '%dmzx.counter.table.counter%'
         tags:

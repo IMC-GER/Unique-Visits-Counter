@@ -13,6 +13,7 @@ use phpbb\config\config;
 use phpbb\db\driver\driver_interface;
 use phpbb\template\template;
 use phpbb\user;
+use phpbb\request\request;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class listener implements EventSubscriberInterface
@@ -25,6 +26,9 @@ class listener implements EventSubscriberInterface
 
 	/** @var user */
 	protected $user;
+
+	/** @var request */
+	protected $request;
 
 	/** @var driver_interface */
 	protected $db;
@@ -41,6 +45,7 @@ class listener implements EventSubscriberInterface
 	* @param config				$config
 	* @param template			$template
 	* @param user				$user
+	* @param request			$request
 	* @param driver_interface	$db
 	* @param string				$visits_counter_table
 	*
@@ -49,6 +54,7 @@ class listener implements EventSubscriberInterface
 		config $config,
 		template $template,
 		user $user,
+		request $request,
 		driver_interface $db,
 		$visits_counter_table
 	)
@@ -56,8 +62,18 @@ class listener implements EventSubscriberInterface
 		$this->config 				= $config;
 		$this->template				= $template;
 		$this->user 				= $user;
+		$this->request 				= $request;
 		$this->db 					= $db;
 		$this->visits_counter_table = $visits_counter_table;
+
+		/* If environment variable 'browscap' not set in the php.ini
+		   adds browscap to the server environment. */
+		if (!getenv('browscap'))
+		{
+			$browscap_var = 'browscap=' . $_ENV['DOCUMENT_ROOT'] . 'ext/dmzx/counter/browscap/php_browscap.ini';
+			putenv($browscap_var);
+		}
+
 	}
 
 	static public function getSubscribedEvents()
@@ -80,6 +96,19 @@ class listener implements EventSubscriberInterface
 
 	public function add_page_header_links($event)
 	{
+		/* Don't count access without user agent or language info */
+		if (!$this->request->server('HTTP_ACCEPT_LANGUAGE', 'false') || !$this->request->server('HTTP_USER_AGENT', 'false'))
+		{
+			return false;
+		}
+
+		/* Don't count crawler */
+		$getBrowser = @get_browser($this->request->server('HTTP_USER_AGENT', 'DefaultProperties'), true);
+		if ($getBrowser !== false && $getBrowser['crawler'])
+		{
+			return false;
+		}
+
 		if (!empty($this->config['allow_visits_counter']))
 		{
 			$this->user->add_lang_ext('dmzx/counter', 'common');

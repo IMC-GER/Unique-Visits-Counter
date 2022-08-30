@@ -38,7 +38,7 @@ if (empty($lang) || !is_array($lang))
 
 $lang = array_merge($lang, [
 	'UNIQUE_VISITS_COUNTER'			=> [
-		1 => '<strong>%d</strong> besuche',
+		1 => '<strong>%d</strong> besuch',
 		2 => '<strong>%d</strong> besuche',
 	],
 	'UNIQUE_VISITS_COUNTER_HOUR'	=> [
