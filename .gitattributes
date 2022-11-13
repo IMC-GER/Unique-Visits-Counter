@@ -1,8 +1,8 @@
 * text=auto
 * text eol=lf
 
-.gitattributes export-ignore
-.editorconfig export-ignore
+.gitattributes	export-ignore
+.editorconfig	export-ignore
 .github/		export-ignore
 tests/			export-ignore
 README.md 		export-ignore
